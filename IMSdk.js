@@ -283,18 +283,8 @@ class IM {
             data: params,
             params: params
         });
-        // this._checkError(res.data);
-        // console.log(res);
         return res.data;
     }
-
-    // _checkError(resJson) {
-    //     if (resJson.code !== 200) {
-    //         const err = new Error(`code:${resJson.code}- ${resJson.desc}`);
-    //         err.code = resJson.code;
-    //         throw err;
-    //     }
-    // }
 }
 
 module.exports = IM;
