@@ -13,7 +13,8 @@ const config = {
     URL_BLACK_SET: 'https://api.netease.im/nimserver/user/setSpecialRelation.action',
     URL_BLACK_LIST: 'https://api.netease.im/nimserver/user/listBlackAndMuteList.action',
     URL_BATCH_ATTACH_MSG: 'https://api.netease.im/nimserver/msg/sendBatchAttachMsg.action',
-    URL_ATTACH_MSG: 'https://api.netease.im/nimserver/msg/sendAttachMsg.action'
+    URL_ATTACH_MSG: 'https://api.netease.im/nimserver/msg/sendAttachMsg.action',
+    URL_START_CALL: 'https://api.netease.im/call/ecp/startcall.action'
 };
 
 class IM {
@@ -238,7 +239,7 @@ class IM {
      * @param {*} params
      *          from	    String	是	发送者accid，用户帐号，最大32字符，APP内唯一
      *          msgtype	     int	是	0：点对点自定义通知，1：群消息自定义通知，其他返回414
-     *          to	S      tring	是	msgtype==0是表示accid即用户id，msgtype==1表示tid即群id
+     *          to	       String	是	msgtype==0是表示accid即用户id，msgtype==1表示tid即群id
      *          attach	   String	是	自定义通知内容，第三方组装的字符串，建议是JSON串，最大长度4096字符
      *          pushcontent	String	否	推送文案，android以此为推送显示文案；ios若未填写payload，显示文案以pushcontent为准。超过500字符后，会对文本进行截断。
      *          payload	  String	否	iOS推送对应的payload,必须是JSON,不能超过2k字符
@@ -253,8 +254,24 @@ class IM {
      *                                  3. route: 该消息是否需要抄送第三方；默认true (需要app开通消息抄送功能)
      * 
      */
-    sendBatchAttachMsg(params) {
-        return this._request({ uri: config.URL_BATCH_ATTACH_MSG, params });
+    sendAttachMsg(params) {
+        return this._request({ uri: config.URL_ATTACH_MSG, params });
+    }
+
+    /** 
+     * 专线电话
+     * @param {*} params
+     * 
+     *        callerAcc	String	是	发起本次请求的用户的accid
+     *        caller	String	是	主叫方电话号码(不带+86这类国家码,下同)
+     *        callee	String	是	被叫方电话号码
+     *        maxDur	int	是	本通电话最大可持续时长,单位秒,超过该时长时通话会自动切断。
+     *        record	String	否	本通电话是否需要录音，true或false，默认false，(appkey需要开启专线电话录音功能)。
+     * 
+     */
+    startcall(params) {
+        params.maxDur = 60 * 20; // 最长打20分钟
+        return this._request({ uri: config.URL_START_CALL, params });
     }
 
     async _request({ uri, params }) {
@@ -270,6 +287,14 @@ class IM {
         // console.log(res);
         return res.data;
     }
+
+    // _checkError(resJson) {
+    //     if (resJson.code !== 200) {
+    //         const err = new Error(`code:${resJson.code}- ${resJson.desc}`);
+    //         err.code = resJson.code;
+    //         throw err;
+    //     }
+    // }
 }
 
 module.exports = IM;
